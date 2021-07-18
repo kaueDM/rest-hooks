@@ -331,6 +331,7 @@ First three members: ${JSON.stringify(input.slice(0, 3), null, 2)}`;
     this: T,
     input: Readonly<Partial<AbstractInstanceType<T>>>,
     unvisit: schema.UnvisitFunction,
+    globalKey: object[],
   ): [AbstractInstanceType<T>, boolean, boolean] {
     if (isImmutable(input)) {
       // Need to set this first so that if it is referenced further within the
@@ -340,6 +341,7 @@ First three members: ${JSON.stringify(input.slice(0, 3), null, 2)}`;
         this.schema,
         input,
         unvisit,
+        globalKey,
       );
       return [this.fromJS(denormEntity.toObject()), found, deleted];
     }
@@ -356,7 +358,7 @@ First three members: ${JSON.stringify(input.slice(0, 3), null, 2)}`;
       const nextInput = Object.prototype.hasOwnProperty.call(input, key)
         ? (input as any)[key]
         : undefined;
-      const [value, , deletedItem] = unvisit(nextInput, schema);
+      const [value, , deletedItem] = unvisit(nextInput, schema, globalKey);
 
       if (
         deletedItem &&
